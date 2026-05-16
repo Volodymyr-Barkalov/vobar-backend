@@ -1,0 +1,9 @@
+# Local development configuration reference.
+# Copy values from your provider and put them in .env at the project root.
+# This file is committed to git — never put real credentials here.
+#
+# Required variables:
+#   DB_URL      - JDBC connection string (e.g. jdbc:postgresql://host/db?sslmode=require)
+#   DB_USERNAME - database username
+#   DB_PASSWORD - database password
+#   JWT_SECRET  - Base64-encoded secret, generate with: openssl rand -base64 32
