@@ -38,3 +38,5 @@ testRuntimeOnly 'com.h2database:h2'
 tasks.named('test') {
 	useJUnitPlatform()
 }
+
+apply from: 'gradle/jacoco.gradle'

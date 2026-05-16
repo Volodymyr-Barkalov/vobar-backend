@@ -1,0 +1,89 @@
+import groovy.xml.XmlSlurper
+
+apply plugin: 'jacoco'
+
+def excludedClasses = [
+	'**/VobarBackendApplication*',
+	'**/config/**',
+	'**/dto/**',
+	'**/model/Article*',
+	'**/model/User*',
+]
+
+def applyExclusions = { classDirectories ->
+	classDirectories.setFrom(files(classDirectories.files.collect {
+		fileTree(dir: it, exclude: excludedClasses)
+	}))
+}
+
+tasks.named('test') {
+	finalizedBy jacocoTestReport
+}
+
+jacocoTestReport {
+	dependsOn test
+	reports {
+		xml.required = true
+		html.required = true
+	}
+	afterEvaluate { applyExclusions(classDirectories) }
+}
+
+jacocoTestCoverageVerification {
+	afterEvaluate { applyExclusions(classDirectories) }
+	violationRules {
+		rule {
+			limit {
+				counter = 'LINE'
+				minimum = 0.80
+			}
+		}
+	}
+}
+
+check.dependsOn jacocoTestCoverageVerification
+
+tasks.register('coverageSummary') {
+	dependsOn jacocoTestReport
+	doLast {
+		def report = file("${buildDir}/reports/jacoco/test/jacocoTestReport.xml")
+		if (!report.exists()) return
+
+		def xml = new XmlSlurper()
+		xml.setFeature('http://apache.org/xml/features/disallow-doctype-decl', false)
+		xml.setFeature('http://apache.org/xml/features/nonvalidating/load-external-dtd', false)
+		def parsed = xml.parse(report)
+
+		def threshold = jacocoTestCoverageVerification.violationRules.rules[0].limits[0].minimum.toDouble()
+		def failing = []
+
+		parsed.package.each { pkg ->
+			pkg.'class'.each { cls ->
+				def lines = cls.counter.find { it.@type == 'LINE' }
+				if (lines) {
+					def covered = lines.@covered.toInteger()
+					def missed  = lines.@missed.toInteger()
+					def total   = covered + missed
+					if (total > 0 && (covered / total) < threshold) {
+						failing << [
+							name   : cls.@name.text().replace('/', '.'),
+							covered: covered,
+							total  : total,
+							ratio  : (covered / total * 100).round(1)
+						]
+					}
+				}
+			}
+		}
+
+		if (failing) {
+			println "\n=== Classes below ${(threshold * 100).toInteger()}% line coverage ==="
+			failing.sort { it.ratio }.each { c ->
+				printf "  %-70s %d/%d lines (%s%%)\n", c.name, c.covered, c.total, c.ratio
+			}
+			println ''
+		}
+	}
+}
+
+jacocoTestCoverageVerification.finalizedBy coverageSummary
