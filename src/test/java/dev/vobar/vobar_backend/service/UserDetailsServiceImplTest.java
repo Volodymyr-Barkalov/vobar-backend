@@ -27,7 +27,7 @@ class UserDetailsServiceImplTest {
 
     private User user() {
         User u = new User();
-        u.setId(1L);
+        u.setId("1");
         u.setUsername("admin");
         u.setPassword("$2a$10$hashedpassword");
         return u;
