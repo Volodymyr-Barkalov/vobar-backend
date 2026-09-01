@@ -6,14 +6,12 @@ import dev.vobar.vobar_backend.model.Article;
 import dev.vobar.vobar_backend.repository.ArticleRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.Instant;
 import java.util.List;
 
 @Service
-@Transactional(readOnly = true)
 public class ArticleService {
 
     private final ArticleRepository repository;
@@ -29,13 +27,12 @@ public class ArticleService {
         return articles.stream().map(ArticleResponse::from).toList();
     }
 
-    public ArticleResponse findById(Long id) {
+    public ArticleResponse findById(String id) {
         return repository.findById(id)
                 .map(ArticleResponse::from)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
-    @Transactional
     public ArticleResponse create(ArticleRequest request) {
         Article article = new Article();
         article.setTitle(request.title());
@@ -47,8 +44,7 @@ public class ArticleService {
         return ArticleResponse.from(repository.save(article));
     }
 
-    @Transactional
-    public ArticleResponse update(Long id, ArticleRequest request) {
+    public ArticleResponse update(String id, ArticleRequest request) {
         Article article = repository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         article.setTitle(request.title());
@@ -59,8 +55,7 @@ public class ArticleService {
         return ArticleResponse.from(repository.save(article));
     }
 
-    @Transactional
-    public void delete(Long id) {
+    public void delete(String id) {
         if (!repository.existsById(id)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }

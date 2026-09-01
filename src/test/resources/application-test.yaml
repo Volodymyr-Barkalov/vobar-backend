@@ -1,12 +1,9 @@
 JWT_SECRET: dGVzdFNlY3JldEtleVRoYXRJc0xvbmdFbm91Z2gxMjM=
-DB_URL: jdbc:h2:mem:testdb;MODE=PostgreSQL;DB_CLOSE_DELAY=-1
-DB_USERNAME: sa
-DB_PASSWORD: ""
+MONGO_URI: mongodb://localhost:27017/vobar-test
 
 spring:
-  datasource:
-    driver-class-name: org.h2.Driver
-  jpa:
-    database-platform: org.hibernate.dialect.H2Dialect
-  flyway:
-    enabled: true
+  mongodb:
+    uri: ${MONGO_URI}
+  data:
+    mongodb:
+      auto-index-creation: false

@@ -6,7 +6,7 @@ import java.time.Instant;
 import java.util.List;
 
 public record ArticleResponse(
-        Long id,
+        String id,
         String title,
         String summary,
         String content,

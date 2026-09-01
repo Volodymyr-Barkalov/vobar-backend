@@ -39,14 +39,14 @@ class ArticleControllerTest {
         mockMvc = MockMvcBuilders.standaloneSetup(articleController).build();
     }
 
-    private ArticleResponse response(Long id) {
+    private ArticleResponse response(String id) {
         return new ArticleResponse(id, "Title", "Summary", "Content", List.of("tag"), true, Instant.now());
     }
 
     @Test
     void getAll_whenAnonymous_returnsPublishedArticles() throws Exception {
         // given
-        when(articleService.findAll(false)).thenReturn(List.of(response(1L), response(2L)));
+        when(articleService.findAll(false)).thenReturn(List.of(response("1"), response("2")));
 
         // when / then
         mockMvc.perform(get("/api/articles"))
@@ -57,7 +57,7 @@ class ArticleControllerTest {
     @Test
     void getOne_whenArticleExists_returnsArticle() throws Exception {
         // given
-        when(articleService.findById(1L)).thenReturn(response(1L));
+        when(articleService.findById("1")).thenReturn(response("1"));
 
         // when / then
         mockMvc.perform(get("/api/articles/1"))
@@ -69,7 +69,7 @@ class ArticleControllerTest {
     @Test
     void getOne_whenArticleNotFound_returnsNotFound() throws Exception {
         // given
-        when(articleService.findById(99L)).thenThrow(new ResponseStatusException(NOT_FOUND));
+        when(articleService.findById("99")).thenThrow(new ResponseStatusException(NOT_FOUND));
 
         // when / then
         mockMvc.perform(get("/api/articles/99"))
@@ -79,7 +79,7 @@ class ArticleControllerTest {
     @Test
     void create_whenValidRequest_returnsCreated() throws Exception {
         // given
-        when(articleService.create(any())).thenReturn(response(1L));
+        when(articleService.create(any())).thenReturn(response("1"));
 
         // when / then
         mockMvc.perform(post("/api/articles")
@@ -94,7 +94,7 @@ class ArticleControllerTest {
     @Test
     void update_whenArticleExists_returnsUpdated() throws Exception {
         // given
-        when(articleService.update(eq(1L), any())).thenReturn(response(1L));
+        when(articleService.update(eq("1"), any())).thenReturn(response("1"));
 
         // when / then
         mockMvc.perform(put("/api/articles/1")
@@ -109,19 +109,19 @@ class ArticleControllerTest {
     @Test
     void delete_whenArticleExists_returnsNoContent() throws Exception {
         // given
-        doNothing().when(articleService).delete(1L);
+        doNothing().when(articleService).delete("1");
 
         // when / then
         mockMvc.perform(delete("/api/articles/1"))
                 .andExpect(status().isNoContent());
 
-        verify(articleService).delete(1L);
+        verify(articleService).delete("1");
     }
 
     @Test
     void delete_whenArticleNotFound_returnsNotFound() throws Exception {
         // given
-        doThrow(new ResponseStatusException(NOT_FOUND)).when(articleService).delete(99L);
+        doThrow(new ResponseStatusException(NOT_FOUND)).when(articleService).delete("99");
 
         // when / then
         mockMvc.perform(delete("/api/articles/99"))

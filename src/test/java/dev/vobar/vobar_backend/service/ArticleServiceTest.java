@@ -29,7 +29,7 @@ class ArticleServiceTest {
     @InjectMocks
     private ArticleService articleService;
 
-    private Article article(Long id, boolean published) {
+    private Article article(String id, boolean published) {
         Article a = new Article();
         a.setId(id);
         a.setTitle("Title");
@@ -44,7 +44,7 @@ class ArticleServiceTest {
     @Test
     void findAll_whenIncludeUnpublished_returnsAllArticles() {
         // given
-        when(repository.findAll()).thenReturn(List.of(article(1L, true), article(2L, false)));
+        when(repository.findAll()).thenReturn(List.of(article("1", true), article("2", false)));
 
         // when
         List<ArticleResponse> result = articleService.findAll(true);
@@ -58,7 +58,7 @@ class ArticleServiceTest {
     @Test
     void findAll_whenExcludeUnpublished_returnsPublishedOnly() {
         // given
-        when(repository.findByPublishedTrue()).thenReturn(List.of(article(1L, true)));
+        when(repository.findByPublishedTrue()).thenReturn(List.of(article("1", true)));
 
         // when
         List<ArticleResponse> result = articleService.findAll(false);
@@ -72,23 +72,23 @@ class ArticleServiceTest {
     @Test
     void findById_whenArticleExists_returnsArticle() {
         // given
-        when(repository.findById(1L)).thenReturn(Optional.of(article(1L, true)));
+        when(repository.findById("1")).thenReturn(Optional.of(article("1", true)));
 
         // when
-        ArticleResponse result = articleService.findById(1L);
+        ArticleResponse result = articleService.findById("1");
 
         // then
-        assertThat(result.id()).isEqualTo(1L);
+        assertThat(result.id()).isEqualTo("1");
         assertThat(result.title()).isEqualTo("Title");
     }
 
     @Test
     void findById_whenArticleNotFound_throwsNotFoundException() {
         // given
-        when(repository.findById(99L)).thenReturn(Optional.empty());
+        when(repository.findById("99")).thenReturn(Optional.empty());
 
         // when / then
-        assertThatThrownBy(() -> articleService.findById(99L))
+        assertThatThrownBy(() -> articleService.findById("99"))
                 .isInstanceOf(ResponseStatusException.class);
     }
 
@@ -96,26 +96,26 @@ class ArticleServiceTest {
     void create_whenValidRequest_savesAndReturnsArticle() {
         // given
         ArticleRequest request = new ArticleRequest("Title", "Summary", "Content", List.of("tag"), true);
-        when(repository.save(any())).thenReturn(article(1L, true));
+        when(repository.save(any())).thenReturn(article("1", true));
 
         // when
         ArticleResponse result = articleService.create(request);
 
         // then
-        assertThat(result.id()).isEqualTo(1L);
+        assertThat(result.id()).isEqualTo("1");
         verify(repository).save(any(Article.class));
     }
 
     @Test
     void update_whenArticleExists_updatesAndReturnsArticle() {
         // given
-        Article existing = article(1L, true);
+        Article existing = article("1", true);
         ArticleRequest request = new ArticleRequest("Updated", "Summary", "Content", List.of(), false);
-        when(repository.findById(1L)).thenReturn(Optional.of(existing));
+        when(repository.findById("1")).thenReturn(Optional.of(existing));
         when(repository.save(existing)).thenReturn(existing);
 
         // when
-        ArticleResponse result = articleService.update(1L, request);
+        ArticleResponse result = articleService.update("1", request);
 
         // then
         assertThat(result).isNotNull();
@@ -126,32 +126,32 @@ class ArticleServiceTest {
     void update_whenArticleNotFound_throwsNotFoundException() {
         // given
         ArticleRequest request = new ArticleRequest("Title", "Summary", "Content", List.of(), true);
-        when(repository.findById(99L)).thenReturn(Optional.empty());
+        when(repository.findById("99")).thenReturn(Optional.empty());
 
         // when / then
-        assertThatThrownBy(() -> articleService.update(99L, request))
+        assertThatThrownBy(() -> articleService.update("99", request))
                 .isInstanceOf(ResponseStatusException.class);
     }
 
     @Test
     void delete_whenArticleExists_deletesArticle() {
         // given
-        when(repository.existsById(1L)).thenReturn(true);
+        when(repository.existsById("1")).thenReturn(true);
 
         // when
-        articleService.delete(1L);
+        articleService.delete("1");
 
         // then
-        verify(repository).deleteById(1L);
+        verify(repository).deleteById("1");
     }
 
     @Test
     void delete_whenArticleNotFound_throwsNotFoundException() {
         // given
-        when(repository.existsById(99L)).thenReturn(false);
+        when(repository.existsById("99")).thenReturn(false);
 
         // when / then
-        assertThatThrownBy(() -> articleService.delete(99L))
+        assertThatThrownBy(() -> articleService.delete("99"))
                 .isInstanceOf(ResponseStatusException.class);
         verify(repository, never()).deleteById(any());
     }

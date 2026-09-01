@@ -26,7 +26,7 @@ public class ArticleController {
     }
 
     @GetMapping("/{id}")
-    public ArticleResponse getOne(@PathVariable Long id) {
+    public ArticleResponse getOne(@PathVariable String id) {
         return articleService.findById(id);
     }
 
@@ -37,13 +37,13 @@ public class ArticleController {
     }
 
     @PutMapping("/{id}")
-    public ArticleResponse update(@PathVariable Long id, @RequestBody ArticleRequest request) {
+    public ArticleResponse update(@PathVariable String id, @RequestBody ArticleRequest request) {
         return articleService.update(id, request);
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable Long id) {
+    public void delete(@PathVariable String id) {
         articleService.delete(id);
     }
 }
