@@ -1,14 +1,6 @@
-# Local development configuration reference.
-# Copy values into .env at the project root (.env is gitignored — see .env.example).
-# This file is committed to git — never put real credentials here.
+# Local development reference — real values go in .env (gitignored, see .env.example).
 #
-# Required variables:
-#   MONGO_URI           - MongoDB connection string, credentials included:
-#                         mongodb://<user>:<pass>@localhost:27017/vobar?authSource=admin
-#                         The server's MongoDB publishes no ports; reach it from a
-#                         laptop through an SSH tunnel (see vobar-server/README.md).
-#   JWT_SECRET          - Base64-encoded secret, generate with: openssl rand -base64 32
-#
-# Optional, first-boot only (creates the admin login when the users collection is empty):
-#   ADMIN_USERNAME      - admin login name
-#   ADMIN_PASSWORD_HASH - BCrypt hash of the password, never the password itself
+#   MONGO_URI           mongodb://<user>:<pass>@localhost:27017/vobar?authSource=admin
+#   JWT_SECRET          openssl rand -base64 32
+#   ADMIN_USERNAME      optional, first boot only
+#   ADMIN_PASSWORD_HASH optional, first boot only, BCrypt hash

@@ -21,9 +21,6 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
-	// Exposes /actuator/health only — the container healthcheck in
-	// vobar-server/apps/vobar-backend uses it, and it reports the MongoDB
-	// connection, so an unreachable database shows up as an unhealthy container.
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
